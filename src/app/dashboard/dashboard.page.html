@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngIf="user">
+    <ion-card-content>
+      <strong>Selamat datang,- {{Username}} - {{ data }}</strong>
+    </ion-card-content>
+  </ion-card>
+ 
+  <ion-button expand="block" (click)="logout()">Logout</ion-button>
+ 
+</ion-content>
