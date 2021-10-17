@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { NavParams } from '@ionic/angular';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-dashboard',
@@ -6,20 +8,32 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage implements OnInit {
-  user = null;
-  Username:any;
+  public user: Array<Object>;
+  item: any;
+  http: any;
+  token: any;
   constructor(
     private auth: AuthService
   ) {} 
   ionViewWillEnter() {
-		this.user = this.auth.getprofile();
-    let dataStorage=JSON.parse(localStorage.getItem(this.auth.TOKEN_KEY));
-    this.user=dataStorage.data.user;
+		this.auth.getDashboard();
 	}
+  getdata() {
+    return new Promise((resolve, reject) => {
+      this.http.get('https://ds.kaltimprov.go.id/api/profil', {
+      headers: {
+        "Authorization": "Bearer " + this.token
+      }
+      })
+      .subscribe(data =>
+      {
+      console.log (data)
+       });
+    });
+}
   logout() {
 		this.auth.logout();
 	}
   ngOnInit() {
   }
-
 }

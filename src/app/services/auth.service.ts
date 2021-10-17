@@ -9,7 +9,7 @@ import { switchMap, map, take, timeout, tap } from 'rxjs/operators';
 
 // buat instance jwt
 const helper = new JwtHelperService();
-const TOKEN_KEY = 'access_token';
+const TOKEN_KEY = 'token';
 
 @Injectable({
 	providedIn: 'root',
@@ -17,19 +17,23 @@ const TOKEN_KEY = 'access_token';
 export class AuthService {
 	public user: Observable<any>;
 	private userData = new BehaviorSubject(null);
+	private result: Object;
 	jwtHelper: any;
-	userInfo: any;
 	TOKEN_KEY: string;
 	token: any;
 	API_URL = 'https://ds.kaltimprov.go.id/api/'; 
-
+	id: any = [];
+	users: any = [];
 	constructor (
 		private storage: Storage,
 		private http: HttpClient,
 		private plt: Platform,
-		private router: Router
+		private router: Router,
+		
 	) {
 		this.loadStoredToken();
+		this.getDashboard();
+		
 	}
 
 	async loadStoredToken() {
@@ -64,44 +68,38 @@ export class AuthService {
 			
 		}
 		
-
-		// replicate a backend auth service. JWT token does not actually use the random user data - this is to be corrected.
-		/*return this.http.get('https://ds.kaltimprov.go.id/api/profil').pipe(
-			take(1),
-			map((res) => {
-				console.log(res);
-				// tslint:disable-next-line: max-line-length
-				//this.storage.set('token');
-			}),
-			switchMap((token) => {
-				const decoded = helper.decodeToken(TOKEN_KEY);
-				console.log('login decoded: ', decoded);
-				this.userData.next(decoded);
-
-				const storageObs = from(this.storage.set(TOKEN_KEY, token));
-				return storageObs;
-			})
-		);*/
 		return this.http.post("https://ds.kaltimprov.go.id/api/login",credentials).pipe(
 			map((response:any)=>{
 			console.log(response);
-			this.storage.set('access_token',response.token);
+			this.storage.set('token',response.token);
 			const decoded = helper.decodeToken(response.token);
-			this.userData.next(decoded);
+			this.userData.next(this.users);
 			console.log(decoded);
+			
 			return true;
 			})
 		)};
 
-	getprofile() {
-		return this.userData.getValue();
-	}
+		async getDashboard() {
+			var token = await this.storage.get(TOKEN_KEY);
+			return new Promise((resolve, reject) => {
+			  this.http.get('https://ds.kaltimprov.go.id/api/profil', {
+				headers: {
+				  "Authorization": "Bearer " + token
+				}
+			  })
+			  .subscribe(data =>
+				{
+				console.log (data)
+		 		});
+			});
+		  }
 
 
 	logout() {
 		this.storage.remove(TOKEN_KEY).then(() => {
 			this.router.navigateByUrl('/');
-			this.userData.next(null);
+			this.userData.next(this.user);
 		});
 		console.log('remove token');
 	}
