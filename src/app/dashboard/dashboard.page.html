@@ -5,9 +5,9 @@
 </ion-header>
 
 <ion-content>
-  <ion-card *ngFor="let user of data">
+  <ion-card *ngIf="user != undefined">
     <ion-card-content>
-      <strong>Selamat datang,- {{user.email}}</strong>
+      <strong>Selamat datang, {{user.email}}</strong>
     </ion-card-content>
   </ion-card>
  
