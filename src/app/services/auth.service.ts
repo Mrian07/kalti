@@ -32,8 +32,6 @@ export class AuthService {
 		
 	) {
 		this.loadStoredToken();
-		this.getDashboard();
-		
 	}
 
 	async loadStoredToken() {
@@ -80,7 +78,7 @@ export class AuthService {
 			})
 		)};
 
-		async getDashboard() {
+		async getDashboard(callback) {
 			var token = await this.storage.get(TOKEN_KEY);
 			return new Promise((resolve, reject) => {
 			  this.http.get('https://ds.kaltimprov.go.id/api/profil', {
@@ -88,10 +86,7 @@ export class AuthService {
 				  "Authorization": "Bearer " + token
 				}
 			  })
-			  .subscribe(data =>
-				{
-				console.log (data)
-		 		});
+			  .subscribe(callback);
 			});
 		  }
 

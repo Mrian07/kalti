@@ -8,7 +8,7 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage implements OnInit {
-  public user: Array<Object>;
+  user: any;
   item: any;
   http: any;
   token: any;
@@ -16,24 +16,15 @@ export class DashboardPage implements OnInit {
     private auth: AuthService
   ) {} 
   ionViewWillEnter() {
-		this.auth.getDashboard();
-	}
-  getdata() {
-    return new Promise((resolve, reject) => {
-      this.http.get('https://ds.kaltimprov.go.id/api/profil', {
-      headers: {
-        "Authorization": "Bearer " + this.token
-      }
-      })
-      .subscribe(data =>
-      {
-      console.log (data)
-       });
+		this.auth.getDashboard((data) => {
+      this.user = data.user;
     });
-}
+	}
+
   logout() {
 		this.auth.logout();
 	}
+
   ngOnInit() {
   }
 }
